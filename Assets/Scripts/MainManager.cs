@@ -62,9 +62,9 @@ public class MainManager : MonoBehaviour
         else if (m_GameOver)
         {
             //update player's score on the leaderboard if it's higher than their previous score
-            if(DataManager.Instance.Leaderboard[DataManager.Instance.PlayerName] < m_Points)
+            if(DataManager.Instance.Leaderboard[DataManager.Instance.CurrentPlayerName] < m_Points)
             {
-                DataManager.Instance.Leaderboard[DataManager.Instance.PlayerName] = m_Points;
+                DataManager.Instance.Leaderboard[DataManager.Instance.CurrentPlayerName] = m_Points;
             }
                  
             //Reload scene when pressing spacebar
