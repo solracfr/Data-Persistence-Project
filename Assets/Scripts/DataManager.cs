@@ -22,23 +22,29 @@ public class DataManager : MonoBehaviour
         Instance = this; // refers to itself as the only (static) instance of this class; no need to make a reference to it
         DontDestroyOnLoad(gameObject);
 
-        LoadOverallBestScore();
+        LoadLeaderboard();
     }
 
     [System.Serializable] // required for JsonUtility -- will only transform things to JSON if tagged as Serializable
     class SaveData // note that this is a class
     {
-        //public string PlayerName; // might not be needed if only implementing highest scores
-        public string HighScorePlayerName;
-        public int HighestScore; 
+        public string[] PlayerNames; // might not be needed if only implementing highest scores
+        public int[] HighestPlayerScores;
     }
 
-    // TODO: implement a history for various players
-    public void SaveOverallBestScore()
+    // convert leaderboard dictionary to arrays for keys and values and save for later
+    public void SaveLeaderboard()
     {
         SaveData data = new SaveData();
-        //data.HighScorePlayerName = HighScorePlayerName;
-        //data.HighestScore = HighestScore;
+        data.PlayerNames = new string[Leaderboard.Count];
+        data.HighestPlayerScores =  new int[Leaderboard.Count];
+
+        int i = 0;
+        foreach(KeyValuePair<string,int> player in Leaderboard)
+        {
+            data.PlayerNames[i] = player.Key;
+            data.HighestPlayerScores[i] = player.Value;
+        }
 
         string json = JsonUtility.ToJson(data); // convert class SaveData instance data to a json
 
@@ -46,8 +52,8 @@ public class DataManager : MonoBehaviour
     }
 
 
-    // TODO: implement a history for various players
-    public void LoadOverallBestScore()
+    // load leaderboard values onto the dictionary
+    public void LoadLeaderboard()
     {
         string path = Application.persistentDataPath +  "/savefile.json";
         if (File.Exists(path))
@@ -55,8 +61,16 @@ public class DataManager : MonoBehaviour
             string json = File.ReadAllText(path);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            CurrentPlayerName = data.HighScorePlayerName; 
-            //HighestScore = data.HighestScore;
+            for(int i = 0; i < data.PlayerNames.Length; i++)
+            {
+                Leaderboard.Add(data.PlayerNames[i], data.HighestPlayerScores[i]);
+            }
+            
+            Debug.Log("Save Loaded");
+        }
+        else
+        {
+            Debug.Log("No save data implemented! Creating new save.");
         }
     }
 }

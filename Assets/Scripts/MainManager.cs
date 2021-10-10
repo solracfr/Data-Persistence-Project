@@ -14,7 +14,7 @@ public class MainManager : MonoBehaviour
     public Text ScoreText;
     public Text HighScoreText;
     public GameObject GameOverText;
-    
+    public GameObject LeaderBoardText;
     private bool m_Started = false;
     private int m_Points; 
     
@@ -73,6 +73,11 @@ public class MainManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
 
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                SceneManager.LoadScene(2);
+            }
+
             /*
             if (m_Points > DataManager.Instance.Leaderboard.Last().Key) 
             {
@@ -92,5 +97,6 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        LeaderBoardText.SetActive(true);
     }
 }
