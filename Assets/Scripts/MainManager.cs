@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,14 +12,14 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
-    private int m_Points;
+    private int m_Points; 
     
     private bool m_GameOver = false;
 
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +37,11 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        HighScoreText.text = "Best: " + 
+        DataManager.Instance.Leaderboard.OrderBy(name => name.Value).Last().Key + ": " + 
+        DataManager.Instance.Leaderboard.OrderBy(name => name.Value).Last().Value.ToString();
+
     }
 
     private void Update()
@@ -55,10 +61,24 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            //update player's score on the leaderboard if it's higher than their previous score
+            if(DataManager.Instance.Leaderboard[DataManager.Instance.PlayerName] < m_Points)
+            {
+                DataManager.Instance.Leaderboard[DataManager.Instance.PlayerName] = m_Points;
+            }
+                 
+            //Reload scene when pressing spacebar
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+
+            /*
+            if (m_Points > DataManager.Instance.Leaderboard.Last().Key) 
+            {
+                DataManager.Instance.HighestScore = m_Points;
+                DataManager.Instance.HighScorePlayerName = DataManager.Instance.PlayerName;
+            }*/
         }
     }
 
