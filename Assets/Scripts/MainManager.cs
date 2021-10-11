@@ -38,9 +38,13 @@ public class MainManager : MonoBehaviour
             }
         }
 
-        HighScoreText.text = "Best: " + 
+        /*HighScoreText.text = "Best: " + 
         DataManager.Instance.Leaderboard.OrderBy(name => name.Value).Last().Key + ": " + 
         DataManager.Instance.Leaderboard.OrderBy(name => name.Value).Last().Value.ToString();
+        */
+        HighScoreText.text = "Best: " + 
+        DataManager.Instance.TopPlayerNames[0] + ": " +
+        DataManager.Instance.TopPlayerScores[0].ToString();
 
     }
 
@@ -61,21 +65,19 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
-            //update player's score on the leaderboard if it's higher than their previous score
-            if(DataManager.Instance.Leaderboard[DataManager.Instance.CurrentPlayerName] < m_Points)
-            {
-                DataManager.Instance.Leaderboard[DataManager.Instance.CurrentPlayerName] = m_Points;
-            }
-                 
             //Reload scene when pressing spacebar
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                UpdateLeaderboard();
+                DataManager.Instance.SaveLeaderboard();
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);      
             }
 
             if (Input.GetKeyDown(KeyCode.K))
             {
-                SceneManager.LoadScene(2);
+                UpdateLeaderboard();
+                DataManager.Instance.SaveLeaderboard();
+                SceneManager.LoadScene(2);    
             }
 
             /*
@@ -84,6 +86,36 @@ public class MainManager : MonoBehaviour
                 DataManager.Instance.HighestScore = m_Points;
                 DataManager.Instance.HighScorePlayerName = DataManager.Instance.PlayerName;
             }*/
+        }
+    }
+
+    // update the leaderboard according to this session's performance
+    void UpdateLeaderboard()
+    {
+        for (int i = 0; i < DataManager.Instance.TopPlayerScores.Length; i++)
+        {
+
+            // if the player scored higher up than someone else on the leaderboard
+            if (m_Points > DataManager.Instance.TopPlayerScores[i])
+            {
+                // shift the leaderboard positions one place down from index i
+                ShiftLeaderboards(DataManager.Instance.TopPlayerScores,
+                DataManager.Instance.TopPlayerNames, i);
+
+                DataManager.Instance.TopPlayerNames[i] = DataManager.Instance.CurrentPlayerName;
+                DataManager.Instance.TopPlayerScores[i] = m_Points;
+
+                return; // gets out of the loop 
+            }
+        }
+    }
+
+    void ShiftLeaderboards(int[] topPlayerScores, string[] topPlayerNames, int index)
+    {
+        for (int i = topPlayerNames.Length - 1; i > index+1; i--)
+        {
+            topPlayerNames[i] = topPlayerNames[i-1];
+            topPlayerScores[i] = topPlayerScores[i-1];
         }
     }
 

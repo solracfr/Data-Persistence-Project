@@ -7,8 +7,8 @@ using UnityEngine;
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance;
-    //implement dictionary of high scores
-    public SortedDictionary<string, int> Leaderboard = new SortedDictionary<string, int>();
+    public string[] TopPlayerNames = new string[29];
+    public int[] TopPlayerScores = new int[29];
     public string CurrentPlayerName;
     private void Awake()
     {
@@ -36,15 +36,25 @@ public class DataManager : MonoBehaviour
     public void SaveLeaderboard()
     {
         SaveData data = new SaveData();
-        data.PlayerNames = new string[Leaderboard.Count];
-        data.HighestPlayerScores =  new int[Leaderboard.Count];
+        data.PlayerNames = new string[TopPlayerNames.Length];
+        data.HighestPlayerScores =  new int[TopPlayerScores.Length];
 
+        for (int i = 0; i < TopPlayerNames.Length; i++)
+        {
+            data.PlayerNames[i] = TopPlayerNames[i];
+            data.HighestPlayerScores[i] = TopPlayerScores[i];
+        }
+
+        Debug.Log($"Data Saved: {data.PlayerNames}  {data.HighestPlayerScores}");
+
+        /*
         int i = 0;
         foreach(KeyValuePair<string,int> player in Leaderboard)
         {
             data.PlayerNames[i] = player.Key;
             data.HighestPlayerScores[i] = player.Value;
         }
+        */
 
         string json = JsonUtility.ToJson(data); // convert class SaveData instance data to a json
 
@@ -63,7 +73,9 @@ public class DataManager : MonoBehaviour
 
             for(int i = 0; i < data.PlayerNames.Length; i++)
             {
-                Leaderboard.Add(data.PlayerNames[i], data.HighestPlayerScores[i]);
+                //Leaderboard.Add(data.PlayerNames[i], data.HighestPlayerScores[i]);
+                TopPlayerNames[i] = data.PlayerNames[i];
+                TopPlayerScores[i] = data.HighestPlayerScores[i];
             }
             
             Debug.Log("Save Loaded");

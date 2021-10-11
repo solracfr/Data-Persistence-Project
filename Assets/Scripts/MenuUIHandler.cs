@@ -23,12 +23,6 @@ public class MenuUIHandler : MonoBehaviour
     {
         SceneManager.LoadScene(1);
         DataManager.Instance.CurrentPlayerName = playerName.text;
-
-        // if the leaderboard doesn't contain your name, make an entry for it
-        if (!DataManager.Instance.Leaderboard.ContainsKey(playerName.text))
-        {
-            DataManager.Instance.Leaderboard.Add(playerName.text, 0); // adds new entry with a default 0 score
-        }
     }
 
     public void LoadLeaderboardScene()
